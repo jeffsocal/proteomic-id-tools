@@ -40,7 +40,8 @@ data_ms2 <- read.csv(path_ms2)
 data_pep <- read.csv(path_pep)
 
 #
-# use lapply to converge the targets list into a matrix with named columns
+# use merge the two datasets, assuming no scans have been co-added
+# keep all scans
 #
 data <- merge(data_ms2, data_pep, 
               by.x='scan', 
