@@ -1,7 +1,7 @@
 # TPP Peptide-Protein ID Pipeline - R Helper Tools
 
 ## Introduction
-These R scripts are an attempt to do a pure XML to CSV conversion for TPP files originating out of XTandem, ProteinProphet, and ProteinProphet, relying only on a single library R:XML. 
+These R scripts are an attempt to do a pure XML to CSV conversion for TPP files originating out of ProteoWizard's msconvert, XTandem, PeptideProphet, and ProteinProphet, relying only on a single library R:XML. 
 
 ## Set-up
 
