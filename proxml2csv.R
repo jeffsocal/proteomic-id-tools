@@ -54,7 +54,7 @@ for ( prot_i in which(names(xml_data) == 'protein_group') ){
   prot <- xml_data[prot_i]
   
   #
-  # grab the prottrum attributes
+  # grab the protein attributes
   #
   prot_att <- append(unlist(prot$protein_group$.attrs), file_xml)
   names(prot_att)[length(prot_att)] <- 'fileName'
