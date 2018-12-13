@@ -54,7 +54,7 @@ for ( scan_n in which(names(xml_data$msRun) == 'scan') ){
   scan <- xml_data$msRun[scan_n]
   
   #
-  # grab the prottrum attributes
+  # grab the spectrum attributes
   #
   scan_att <- append(unlist(scan$scan$.attrs), file_xml)
   names(scan_att)[length(scan_att)] <- 'fileName'
