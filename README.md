@@ -9,7 +9,7 @@ These R scripts are an attempt to do a pure XML to CSV conversion for TPP files 
 
           sudo apt-get install libxml2-dev  
           R
-          > install.packages('XML')
+          > install.packages(c('XML','progress'))
           > q()
 
 2. Checkout the R helper tools repository.
