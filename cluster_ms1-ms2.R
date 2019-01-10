@@ -142,6 +142,9 @@ cluster <- function(x_df,
   n_ydf <- dim(y_df)[1]
   n_seg <- ceiling(n_ydf/segment_size)
   
+  x_df <- as.data.frame(x_df)
+  y_df <- as.data.frame(y_df)
+    
   x_df <- x_df[order(x_df[,x_mz_col]),]
   y_df <- y_df[order(y_df[,y_mz_col]),]
   
