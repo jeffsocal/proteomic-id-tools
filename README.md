@@ -26,12 +26,12 @@ These scripts attempt to dump the XML out as a .csv file that can be universally
           Rscript --slave mzxml2csv.R <path_to.mzXML> <path_to.mzXML.csv>
           
 
-### merge ms2 scans with sequence ids
+### MERGE ms2 scans with sequence ids
 This script is intending to match up the ids with the originating scans so that accounting of search utility (how many spectra were id'd) can be assessed. Along with providing an ability to tune CID parameters, etc. 
 
           Rscript --slave < merge_scans-ids.R --args <path_to.mzXML.csv> <path_to.pepXML.csv>
 
-### cluster ms2 scans with ms1 features
+### CLUSTER ms2 scans with ms1 features
 This script is intending to cluster ids with ms1 features so that accounting of search utility (how many features were id'd) can be assessed, etc. 
 
           R --slave < cluster_ms1-ms2.R --args \
