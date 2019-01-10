@@ -37,7 +37,7 @@ This script is intending to cluster ids with ms1 features so that accounting of 
           R --slave < cluster_ms1-ms2.R --args \
           --out=<file_out.csv> \
           --xf=<path_to.ms1features.csv> \
-          --yf=<path_to.protXML.csv> \
+          --yf=<path_to.pepXML.csv> \
           --xmz=<x_col_mz> \                      # x's table column of m/z values
           --xrt=<x_col_rt> \                      # x's table column of rt values
           --xid=<x_col_id> \                      # x's table column of feature ids
