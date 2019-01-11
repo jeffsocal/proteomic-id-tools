@@ -14,7 +14,7 @@ These R scripts are an attempt to do a pure XML to CSV conversion for TPP files 
 
 2. Checkout the R helper tools repository.
 
-        git clone https://github.com/jeffsocal/tpp-post-id-tools.git
+        git clone https://github.com/jeffsocal/proteomic-id-tools.git
         
 ## Running the Scripts
 You can run the scripts detached from the R terminal, as a command line execution or even bash scripted. The inputs will be looking for the specific _pepXML_, _protXML_, and _mzXML_ as a super-simple method of validating the input.
