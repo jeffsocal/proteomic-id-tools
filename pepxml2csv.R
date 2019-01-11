@@ -14,7 +14,7 @@ path_csv <- NULL
 
 text_cmd <- "
 R --vanilla --slave < pepxml2csv.R --args <path_to.pepXML> <path_to.csv> <FDR_cutoff> <max_rank>
-    FDR_cutoff:  value between 0-1 (default: 0.1 ~ 10% FDR) 
+    FDR_cutoff:  value between 0-1 (default: 0.01 ~ 1% FDR) 
     max_rank:    value >= 1 (default: 1) assumes user only wants highest ranking hit
 "
 
