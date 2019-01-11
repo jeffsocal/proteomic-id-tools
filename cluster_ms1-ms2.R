@@ -60,7 +60,7 @@ read.input <- function(file_name){
   } else if(grepl(".csv$", file_name)){
     df <- read.csv(file_name)
   }
-  return(df)
+    return(df)
 }
 
 ###############################################################################
@@ -71,54 +71,54 @@ apdif <- function(x_df=c(),
                   x_col_ids=NULL,
                   y_col_val=NULL,
                   y_col_ids=NULL){
-  
-  if(!x_col_val %in% colnames(x_df))
-    stop("\n\t=> '", x_col_val , "' not a valid column in data.frame")
-  
-  if(!y_col_val %in% colnames(y_df))
-    stop("\n\t=> '", y_col_val , "' not a valid column in data.frame")
-  
-  if(!x_col_ids %in% colnames(x_df))
-    stop("\n\t=> '", x_col_ids , "' not a valid column in data.frame")
-  
-  if(!y_col_ids %in% colnames(y_df))
-    stop("\n\t=> '", y_col_ids , "' not a valid column in data.frame")
-  
-  
-  
-  
-  x_val                     <- x_df[,x_col_val]
-  y_val                     <- y_df[,y_col_val]
-  
-  x_ids                      <- x_df[,x_col_ids]
-  y_ids                      <- y_df[,y_col_ids]
-  
-  x_n                        <- length(x_val)
-  y_n                        <- length(y_val)
-  
-  x_m                        <- array(x_val, c(x_n, y_n))
-  
-  all_dif                    <- as.numeric(t(x_m) - y_val)
-  
-  x_m_ids                    <- as.character(t(array(x_ids, c(x_n, y_n))))
-  y_m_ids                    <- as.character(array(y_ids, c(y_n, x_n)))
-  
-  df <- data.frame(dif=all_dif,
-                   row_x=x_m_ids,
-                   row_y=y_m_ids)
-  
-  # rename the columns
-  
-  names(df)[2] <- x_col_ids
-  names(df)[3] <- y_col_ids
-  
-  if(x_col_ids == y_col_ids){
-    names(df)[2] <- paste0(names(df)[2], "_x")
-    names(df)[3] <- paste0(names(df)[3], "_y")
-  }
-  
-  return(df)
-  
+    
+    if(!x_col_val %in% colnames(x_df))
+        stop("\n\t=> '", x_col_val , "' not a valid column in data.frame")
+    
+    if(!y_col_val %in% colnames(y_df))
+        stop("\n\t=> '", y_col_val , "' not a valid column in data.frame")
+    
+    if(!x_col_ids %in% colnames(x_df))
+        stop("\n\t=> '", x_col_ids , "' not a valid column in data.frame")
+    
+    if(!y_col_ids %in% colnames(y_df))
+        stop("\n\t=> '", y_col_ids , "' not a valid column in data.frame")
+    
+    
+    
+    
+    x_val                     <- x_df[,x_col_val]
+    y_val                     <- y_df[,y_col_val]
+    
+    x_ids                      <- x_df[,x_col_ids]
+    y_ids                      <- y_df[,y_col_ids]
+    
+    x_n                        <- length(x_val)
+    y_n                        <- length(y_val)
+    
+    x_m                        <- array(x_val, c(x_n, y_n))
+    
+    all_dif                    <- as.numeric(t(x_m) - y_val)
+    
+    x_m_ids                    <- as.character(t(array(x_ids, c(x_n, y_n))))
+    y_m_ids                    <- as.character(array(y_ids, c(y_n, x_n)))
+    
+    df <- data.frame(dif=all_dif,
+                     row_x=x_m_ids,
+                     row_y=y_m_ids)
+    
+    # rename the columns
+    
+    names(df)[2] <- x_col_ids
+    names(df)[3] <- y_col_ids
+    
+    if(x_col_ids == y_col_ids){
+        names(df)[2] <- paste0(names(df)[2], "_x")
+        names(df)[3] <- paste0(names(df)[3], "_y")
+    }
+    
+    return(df)
+    
 }
 
 ###############################################################################
@@ -135,72 +135,72 @@ cluster <- function(x_df,
                     tol_mz_da = 0.1,
                     tol_rt_sec = 10,
                     segment_size = 2000){
-  
-  cluster_df <- c()
-  
-  # determine the N number of segments
-  n_ydf <- dim(y_df)[1]
-  n_seg <- ceiling(n_ydf/segment_size)
-  
-  x_df <- as.data.frame(x_df)
-  y_df <- as.data.frame(y_df)
     
-  x_df <- x_df[order(x_df[,x_mz_col]),]
-  y_df <- y_df[order(y_df[,y_mz_col]),]
-  
-  pb <- progress_bar$new(
-    format = " clustering [:bar] :percent eta: :eta",
-    total = n_seg, clear = FALSE, width= 60)
-  
-  for( i in 1:n_seg ){
+    cluster_df <- c()
     
-    pb$tick()
+    # determine the N number of segments
+    n_ydf <- dim(y_df)[1]
+    n_seg <- ceiling(n_ydf/segment_size)
     
-    i_min <- max(1, (i-1) * segment_size)
-    i_max <- min(i * segment_size, n_ydf)
+    x_df <- as.data.frame(x_df)
+    y_df <- as.data.frame(y_df)
     
-    this_y_df <- y_df[i_min:i_max,]
+    x_df <- x_df[order(x_df[,x_mz_col]),]
+    y_df <- y_df[order(y_df[,y_mz_col]),]
     
-    x_mz_min <- min(this_y_df[,y_mz_col]) - tol_mz_da * 2
-    x_mz_max <- max(this_y_df[,y_mz_col]) + tol_mz_da * 2
-    x_rt_min <- min(this_y_df[,y_rt_col]) - tol_rt_sec * 2
-    x_rt_max <- max(this_y_df[,y_rt_col]) + tol_rt_sec * 2
+    pb <- progress_bar$new(
+        format = " clustering [:bar] :percent eta: :eta",
+        total = n_seg, clear = FALSE, width= 60)
     
-    this_x_df <- x_df
-    this_x_df <- this_x_df[this_x_df[,x_mz_col] >= x_mz_min,]
-    this_x_df <- this_x_df[this_x_df[,x_mz_col] < x_mz_max,]
-    this_x_df <- this_x_df[this_x_df[,x_rt_col] >= x_rt_min,]
-    this_x_df <- this_x_df[this_x_df[,x_rt_col] < x_rt_max,]
-    
-    if(dim(this_x_df)[1] == 0)
-      next()
-    
-    delta_mz_df <- apdif(this_x_df, this_y_df,
-                         x_mz_col, x_id_col,
-                         y_mz_col, y_id_col)
-    
-    delta_lc_df <- apdif(this_x_df, this_y_df,
-                         x_rt_col, x_id_col,
-                         y_rt_col, y_id_col)
-    
-    delta_mz_df <- delta_mz_df[abs(delta_mz_df$dif) <= tol_mz_da,]
-    delta_lc_df <- delta_lc_df[abs(delta_lc_df$dif) <= tol_rt_sec,]
-    
-    m_x <- x_id_col
-    m_y <- y_id_col
-    
-    if(x_id_col == y_id_col){
-      m_x <- paste0(m_x, "_x")
-      m_y <- paste0(m_y, "_y")
+    for( i in 1:n_seg ){
+        
+        pb$tick()
+        
+        i_min <- max(1, (i-1) * segment_size)
+        i_max <- min(i * segment_size, n_ydf)
+        
+        this_y_df <- y_df[i_min:i_max,]
+        
+        x_mz_min <- min(this_y_df[,y_mz_col]) - tol_mz_da * 2
+        x_mz_max <- max(this_y_df[,y_mz_col]) + tol_mz_da * 2
+        x_rt_min <- min(this_y_df[,y_rt_col]) - tol_rt_sec * 2
+        x_rt_max <- max(this_y_df[,y_rt_col]) + tol_rt_sec * 2
+        
+        this_x_df <- x_df
+        this_x_df <- this_x_df[this_x_df[,x_mz_col] >= x_mz_min,]
+        this_x_df <- this_x_df[this_x_df[,x_mz_col] < x_mz_max,]
+        this_x_df <- this_x_df[this_x_df[,x_rt_col] >= x_rt_min,]
+        this_x_df <- this_x_df[this_x_df[,x_rt_col] < x_rt_max,]
+        
+        if(dim(this_x_df)[1] == 0)
+            next()
+        
+        delta_mz_df <- apdif(this_x_df, this_y_df,
+                             x_mz_col, x_id_col,
+                             y_mz_col, y_id_col)
+        
+        delta_lc_df <- apdif(this_x_df, this_y_df,
+                             x_rt_col, x_id_col,
+                             y_rt_col, y_id_col)
+        
+        delta_mz_df <- delta_mz_df[abs(delta_mz_df$dif) <= tol_mz_da,]
+        delta_lc_df <- delta_lc_df[abs(delta_lc_df$dif) <= tol_rt_sec,]
+        
+        m_x <- x_id_col
+        m_y <- y_id_col
+        
+        if(x_id_col == y_id_col){
+            m_x <- paste0(m_x, "_x")
+            m_y <- paste0(m_y, "_y")
+        }
+        
+        this_cluster_df <- merge(delta_mz_df, delta_lc_df, by=c(m_x, m_y), suffixes=c("_mz", "_lc"))
+        
+        cluster_df <- rbind(cluster_df, this_cluster_df)
     }
     
-    this_cluster_df <- merge(delta_mz_df, delta_lc_df, by=c(m_x, m_y), suffixes=c("_mz", "_lc"))
+    return(cluster_df)
     
-    cluster_df <- rbind(cluster_df, this_cluster_df)
-  }
-  
-  return(cluster_df)
-  
 }
 
 
@@ -208,12 +208,12 @@ x_df <- read.input(x_df)
 y_df <- read.input(y_df)
 
 out_df <- cluster(x_df,
-               y_df,
-               x_mz_col,
-               y_mz_col,
-               x_rt_col,
-               y_rt_col,
-               x_id_col,
+                  y_df,
+                  x_mz_col,
+                  y_mz_col,
+                  x_rt_col,
+                  y_rt_col,
+                  x_id_col,
                y_id_col,
                tol_mz_da,
                tol_rt_sec,
