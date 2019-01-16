@@ -8,36 +8,60 @@
 rm(list=ls())
 require(XML)
 library(progress)
+options(warn=-1)
 
-path_xml <- NULL
-path_csv <- NULL
+help_text <- "
+ NAME
+    pepxml2csv.R
 
-text_cmd <- "
-R --vanilla --slave < pepxml2csv.R --args <path_to.pepXML> <path_to.csv> <FDR_cutoff> <max_rank>
-    FDR_cutoff:  value between 0-1 (default: 0.01 ~ 1% FDR) 
-    max_rank:    value >= 1 (default: 1) assumes user only wants highest ranking hit
+ SYNOPSIS
+    pepxml2csv.R --xml=<path_pepxml> --fdr=0.05 --rank=1
+
+ DESCRIPTION
+    extract peptide id data from PeptideProphet pepXML files for downstream analysis
+
+ COMMAND LINE
+
+    --xml <path_pepxml>
+
+    --csv <path_csv> (optional: path_pepxml.csv)
+
+    --fdr false discovery rate value between 0-1 (default: 0.01 ~ 1% FDR) 
+
+    --rank max rank desired value >= 1 (default: 1) assumes user only wants highest ranking hit
+
+ EXAMPLE
+
+    R --vanilla --slave < pepxml2csv.R --args --xml=<path_to.pepXML>
+
 "
 
-args = commandArgs(trailingOnly=TRUE)
-#
-# test if there are 2 arguments
-#
-if (length(args) !=4 ) {
-    
-    stop(text_cmd, call.=FALSE)
-    
-} else {
-    
-    path_xml <- args[1]
-    path_csv <- args[2]
-    fdr_cutf <- args[3]
-    max_rank <- args[4]
-    
-    if(!grepl("pepXML$", path_xml, ignore.case = T) | !grepl("csv$", path_csv, ignore.case = T))
-        
-        stop(text_cmd, call.=FALSE)
-    
+###############################################################################
+# USER INPUT
+path_xml                      <- NULL
+path_csv                      <- NULL
+fdr_cutf                      <- 0.01
+max_rank                      <- 1
+
+for (arg in commandArgs()){
+    arg_value <- as.character(sub("--[a-z]*\\=", "", arg))
+    if( grepl("--xml", arg) ) path_xml <- arg_value
+    if( grepl("--csv", arg) ) path_csv <- arg_value
+    if( grepl("--fdr", arg) ) fdr_cutf <- arg_value
+    if( grepl("--rank", arg) ) max_rank <- arg_value
+    if( grepl("--help", arg) ) stop(help_text)
 }
+
+###############################################################################
+# INPUT VALIDATION
+message <- NULL
+if(is.null(path_xml)) message <- stop("ERROR\n", "  no mzXML file declared\n")
+if(!grepl("pep.*XML$", path_xml)) message <- paste0(message, "  mz file (--xml) not a supported format\n")
+if(is.null(path_csv))
+    path_csv = paste0(path_xml, ".csv")
+if(!grepl(".csv$", path_csv)) message <- paste0(message, "  csv file (--csv) not a supported format\n")
+
+if(!is.null(message)) stop("ERROR\n", message)
 
 cat("pepXML to CSV started\n")
 cat(" xml file:                        ", path_xml, "\n")
@@ -56,16 +80,55 @@ file_xml <- sub('.*/', '', path_xml)
 # convert to a master list
 #
 xml_data <- xmlToList(data)
-
-w_specs <- which(names(xml_data$msms_run_summary) == 'spectrum_query')
 cat("\n")
 
-pb <- progress_bar$new(
-    format = " extracting data [:bar] :percent eta: :eta",
-    total = length(w_specs), clear = FALSE, width= 60)
+
+#
+# probe for model performance values
+#
+roc_dat <- xml_data$analysis_summary$peptideprophet_summary$roc_error_data
+
+if(is.null(roc_dat)) stop("ERROR\n", "  xml does not contain FDR statistics\n")
+
+w_dp <- which(names(roc_dat) == 'roc_data_point')
+w_ep <- which(names(roc_dat) == 'error_point')
+
+roc_df <- do.call(rbind, lapply(lapply(roc_dat[w_dp], unlist), "[",
+                                unique(unlist(c(sapply(roc_dat[w_dp],names))))))
+roc_df <- as.data.frame(roc_df)
+roc_df$analysts <- row.names(roc_df)
+
+err_df <- do.call(rbind, lapply(lapply(roc_dat[w_ep], unlist), "[",
+                                unique(unlist(c(sapply(roc_dat[w_ep],names))))))
+err_df <- as.data.frame(err_df)
+err_df$analysts <- row.names(err_df)
+err_df$sensitivity <- NA
+
+pdf <- rbind(roc_df, err_df)
+row.names(pdf) <- 1:dim(pdf)[1]
+
+pdf$min_prob <- as.numeric(as.character(pdf$min_prob))
+pdf$sensitivity <- as.numeric(as.character(pdf$sensitivity))
+pdf$error <- as.numeric(as.character(pdf$error))
+pdf$num_corr <- as.numeric(as.character(pdf$num_corr))
+pdf$num_incorr <- as.numeric(as.character(pdf$num_incorr))
+
+w_pcf <- which(pdf$error == max(pdf[pdf$error <= fdr_cutf &
+                                        pdf$analysts == 'error_point',]$error) &
+                   pdf$analysts == 'error_point')
+min_prob <- pdf[w_pcf,]$min_prob
+cat("\n")
+print(pdf[w_pcf,], row.names = FALSE)
+cat("\n")
+
+
 #
 # traverse the master list to pull id data
 #
+w_specs <- which(names(xml_data$msms_run_summary) == 'spectrum_query')
+pb <- progress_bar$new(
+    format = " extracting data [:bar] :percent eta: :eta",
+    total = length(w_specs), clear = FALSE, width= 60)
 hits <- list()
 for ( spec_i in w_specs ){
     
@@ -135,40 +198,6 @@ colnames(data) <- unique(unlist(c(sapply(hits,names))))
 data$probability <- as.numeric(as.character(data$probability))
 data$hit_rank <- as.numeric(as.character(data$hit_rank))
 
-#
-# probe for model performance values
-#
-roc_dat <- xml_data$analysis_summary$peptideprophet_summary$roc_error_data
-w_dp <- which(names(roc_dat) == 'roc_data_point')
-w_ep <- which(names(roc_dat) == 'error_point')
-
-roc_df <- do.call(rbind, lapply(lapply(roc_dat[w_dp], unlist), "[",
-                                unique(unlist(c(sapply(roc_dat[w_dp],names))))))
-roc_df <- as.data.frame(roc_df)
-roc_df$analysts <- row.names(roc_df)
-
-err_df <- do.call(rbind, lapply(lapply(roc_dat[w_ep], unlist), "[",
-                                unique(unlist(c(sapply(roc_dat[w_ep],names))))))
-err_df <- as.data.frame(err_df)
-err_df$analysts <- row.names(err_df)
-err_df$sensitivity <- NA
-
-pdf <- rbind(roc_df, err_df)
-row.names(pdf) <- 1:dim(pdf)[1]
-
-pdf$min_prob <- as.numeric(as.character(pdf$min_prob))
-pdf$sensitivity <- as.numeric(as.character(pdf$sensitivity))
-pdf$error <- as.numeric(as.character(pdf$error))
-pdf$num_corr <- as.numeric(as.character(pdf$num_corr))
-pdf$num_incorr <- as.numeric(as.character(pdf$num_incorr))
-
-w_pcf <- which(pdf$error == max(pdf[pdf$error <= fdr_cutf &
-                                        pdf$analysts == 'error_point',]$error) &
-                   pdf$analysts == 'error_point')
-min_prob <- pdf[w_pcf,]$min_prob
-cat("\n")
-print(pdf[w_pcf,], row.names = FALSE)
-cat("\n")
 
 #
 # filter data by cutoff min_prob and rank
