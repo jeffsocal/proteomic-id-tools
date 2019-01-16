@@ -23,38 +23,44 @@ These scripts attempt to dump the XML out as a .csv file that can be universally
 
 ### CONVERT mzXML to CSV
 
-          Rscript --slave < mzxml2csv.R --args \
-          <path_to.mzXML> \                      # path to the mzXML file
-          <path_to.mzXML.csv>                    # path to output csv file
+         Rscript mzxml2csv.R \
+          --xml=<path_to.mzXML> \               # path to the mzXML file
+          --csv=<path_to.mzXML.csv>             # path to output csv file
+          
+          --help                                displays the help page
 
 ### CONVERT & FILTER PeptideProphet pep.xml to CSV
 Outputs two CSV files, one contains the peptide sequence ids for each scan, the other contains the performance values that define the ROC and error cutoff probabiity values.
 
-          Rscript --slave < pepxml2csv.R --args \
-          <path_to.pepXML> \                     # path to the peptide prophet xml file
-          <path_to.csv> \                        # path to output csv file
-          <FDR_cutoff> \                         # value between 0-1 (example 0.01 ~ 1% FDR) 
-          <max_rank>                             # value >= 1 (example 1 returns only highest ranking hit)
+          Rscript pepxml2csv.R \
+          --xml=<path_to.pepXML> \              # path to the peptide prophet xml file
+          --csv=<path_to.csv> \                 # path to output csv file
+          --fdr=<FDR_cutoff> \                  # value between 0-1 (example 0.01 ~ 1% FDR) 
+          --rank=<max_rank>                     # value >= 1 (example 1 returns only highest ranking hit)
+          
+          --help                                displays the help page
           
 ### CONVERT & FILTER ProteinProphet prot.xml to CSV
 Outputs three CSV files, one contains the peptide sequence ids for protein, another contains just the protein summary data, and last contains the performance values that define the ROC and error cutoff probabiity values.
 
-          Rscript --slave < protxml2csv.R --args \
-          <path_to.protXML> \                    # path to the protein prophet xml file
-          <path_to.csv> \                        # path to output csv file
-          <FDR_cutoff> \                         # value between 0-1 (example 0.01 ~ 1% FDR)
-          <min_n_peptides>                       # value >= 1 (example 2 proteins w/ 2 unique peptides)
+          Rscript protxml2csv.R \
+          --xml=<path_to.protXML> \             # path to the protein prophet xml file
+          --csv=<path_to.csv> \                 # path to output csv file
+          --fdr=<FDR_cutoff> \                  # value between 0-1 (example 0.01 ~ 1% FDR)
+          --npep=<min_n_peptides>               # value >= 1 (example 2 proteins w/ 2 unique peptides)
+          
+          --help                                displays the help page
           
 
 ### MERGE ms2 scans with sequence ids
 This script is intending to match up the ids with the originating scans so that accounting of search utility (how many spectra were id'd) can be assessed. Along with providing an ability to tune CID parameters, etc. 
 
-          Rscript --slave < merge_scans-ids.R --args <path_to.mzXML.csv> <path_to.pepXML.csv>
+          Rscript merge_scans-ids.R <path_to.mzXML.csv> <path_to.pepXML.csv>
 
 ### CLUSTER ms2 scans with ms1 features
 This script is intending to cluster ids with ms1 features so that accounting of search utility (how many features were id'd) can be assessed, etc. 
 
-          R --slave < cluster_ms1-ms2.R --args \
+          Rscript cluster_ms1-ms2.R \
           --out=<file_out.csv> \
           --xf=<path_to.ms1features.csv> \
           --yf=<path_to.pepXML.csv> \

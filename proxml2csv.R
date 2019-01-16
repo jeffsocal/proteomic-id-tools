@@ -32,7 +32,7 @@ help_text <- "
 
  EXAMPLE
 
-    R --vanilla --slave < proxml2csv.R --args --xml=<path_to.proXML>
+    Rscript proxml2csv.R --xml=<path_to.proXML>
 
 "
 

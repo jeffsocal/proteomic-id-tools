@@ -29,7 +29,7 @@ help_text <- "
 
  EXAMPLE
 
-    R --vanilla --slave < mzxml2csv.R --args --xml=<path_mzXML>
+    Rscript mzxml2csv.R --xml=<path_mzXML>
 
 "
 

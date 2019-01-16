@@ -6,6 +6,38 @@
 
 options(warn=-1)
 
+help_text <- "
+ NAME
+    cluster_ms1-ms2.R
+
+ SYNOPSIS
+    cluster_ms1-ms2.R --xml=<path_pepxml> --fdr=0.05 --rank=1
+
+ DESCRIPTION
+    cluster ids with ms1 features so that accounting of search 
+    utility (how many features were id'd) can be assessed, etc.
+
+ COMMAND LINE
+
+    --out=<file_out.csv> \
+    --xf=<path_to.ms1features.csv> \
+    --yf=<path_to.pepXML.csv> \
+    --xmz=<x_col_mz> \                      # x's table column of m/z values
+    --xrt=<x_col_rt> \                      # x's table column of rt values
+    --xid=<x_col_id> \                      # x's table column of feature ids
+    --ymz=<y_col_mz> \                      # y's table column of m/z values
+    --yrt=<y_col_rt> \                      # y's table column of rt values
+    --yid=<y_col_id> \                      # y's table column of scans ids
+    --tmz=<tolerance_mz_daltons> \          # m/z clustering tolerance (default: 0.1 daltons)
+    --trt=<tolerance_rt_sec> \              # rt clustering tolerance (default: 10 sec)
+    --seg=<data_segments>                   # data segmenting for large files (default: 1000)
+
+ EXAMPLE
+
+    Rscript pepxml2csv.R --xml=<path_to.pepXML>
+
+"
+
 ###############################################################################
 # USER INPUT
 outf <- x_df <- y_df          <- NULL
@@ -30,6 +62,7 @@ for (arg in commandArgs()){
   if( grepl("--tmz", arg) ) tol_mz_da <- arg_value
   if( grepl("--trt", arg) ) tol_rt_sec <- arg_value
   if( grepl("--seg", arg) ) segment_size <- arg_value
+  if( grepl("--help", arg) ) stop(help_text)
 }
 
 ###############################################################################

@@ -32,7 +32,7 @@ help_text <- "
 
  EXAMPLE
 
-    R --vanilla --slave < pepxml2csv.R --args --xml=<path_to.pepXML>
+    Rscript pepxml2csv.R --xml=<path_to.pepXML>
 
 "
 
